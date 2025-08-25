@@ -1,5 +1,3 @@
-#Folia_VillagerBucket
-
 Folia_VillagerBucket - 村民桶插件
 
 一款专为 Folia 核心设计的 Minecraft 村民桶插件，允许玩家捕获和释放带有完整交易数据的村民。
@@ -71,16 +69,20 @@ enabled-worlds:
 · /villagerbucket reload - 重载插件配置（需要 villagerbucket.admin 权限）
 · /villagerbucket give <玩家> [数量] - 给予玩家空村民桶（需要 villagerbucket.admin 权限）
 
+构建方法
+
+下载源码，在源码对应目录使用以下命令开始编译：
+
+```bash
+mvn package -Dmaven.test.skip=true -T 1C -Dmaven.compiler.fork=true
+```
+
 此插件使用 Maven 构建，主要依赖：
 
 · Folia API
 · Gson (用于数据序列化)
 
-构建方法
-下载源码在源码对应目录使用以下命令开始编译
-mvn package -Dmaven.test.skip=true -T 1C -Dmaven.compiler.fork=true
-
-问题反馈https://github.com/ctnBobong32/Folia_VillagerBucket/issues
+问题反馈
 
 如果您遇到任何问题或有功能建议，请通过以下方式联系：
 
@@ -89,7 +91,7 @@ mvn package -Dmaven.test.skip=true -T 1C -Dmaven.compiler.fork=true
 
 开源协议
 
-本项目采用 MIT 开源协议。
+本项目采用 MIT 开源协议，详情请查看 LICENSE 文件。
 
 致谢
 
