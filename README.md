@@ -87,6 +87,7 @@ mvn package -Dmaven.test.skip=true -T 1C -Dmaven.compiler.fork=true
 如果您遇到任何问题或有功能建议，请通过以下方式联系：
 
 · GitHub Issues: https://github.com/ctnBobong32/Folia_VillagerBucket/issues
+
 · 邮箱: 3647844952@qq.com
 
 开源协议
