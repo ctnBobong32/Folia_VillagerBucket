@@ -1,0 +1,25 @@
+name: VillagerBucket
+version: 2.0.0
+main: com.ctn.Villager.VillagerBucketPlugin
+api-version: 1.21
+author: CTN32
+description: 允许玩家用空桶捕获和释放村民 (PDC版本)
+folia-supported: true
+# 权限
+permissions:
+  villagerbucket.capture:
+    description: 允许玩家捕获村民
+    default: true
+  villagerbucket.release:
+    description: 允许玩家释放村民
+    default: true
+  villagerbucket.admin:
+    description: 管理员权限
+    default: op
+
+# 命令
+commands:
+  villagerbucket:
+    description: 村民桶插件主命令
+    usage: /<command> [reload|info]
+    aliases: [vb]
