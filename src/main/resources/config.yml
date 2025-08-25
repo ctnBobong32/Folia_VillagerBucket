@@ -1,0 +1,114 @@
+# VillagerBucket 配置文件
+# 村民桶插件配置
+
+# 插件设置
+settings:
+  # 是否启用插件
+  enabled: true
+  
+  # 是否检查权限
+  check-permissions: true
+  
+  # 自定义模型数据编号
+  custom-model-data: 1000
+  
+  # 是否启用调试模式
+  debug-mode: false
+  
+  # 是否保存村民交易数据
+  save-trades: true
+  
+  # 是否保存村民经验
+  save-experience: true
+  
+  # 是否保存村民补货信息
+  save-restock-info: true
+
+# 村民桶物品设置
+bucket:
+  # 桶的显示名称
+  name: "&6村民桶"
+  
+  # 桶的Lore描述
+  lore:
+    - "&7包含一个被捕获的村民"
+    - "&7右键放置到世界上"
+    - ""
+
+# 权限设置
+permissions:
+  # 捕获村民权限
+  capture: "villagerbucket.capture"
+  
+  # 释放村民权限
+  release: "villagerbucket.release"
+  
+  # 管理员权限
+  admin: "villagerbucket.admin"
+  
+  # 绕过限制权限
+  bypass:
+    # 绕过职业限制
+    profession: "villagerbucket.bypass.profession"
+    
+    # 绕过等级限制
+    level: "villagerbucket.bypass.level"
+
+# 村民限制设置
+restrictions:
+  # 允许捕获的职业列表
+  # 如果为空列表则允许所有职业
+  allowed-professions:
+    - "ARMORER"
+    - "BUTCHER"
+    - "CARTOGRAPHER"
+    - "CLERIC"
+    - "FARMER"
+    - "FISHERMAN"
+    - "FLETCHER"
+    - "LEATHERWORKER"
+    - "LIBRARIAN"
+    - "MASON"
+    - "SHEPHERD"
+    - "TOOLSMITH"
+    - "WEAPONSMITH"
+  
+  # 禁止捕获的职业列表
+  # 优先级高于 allowed-professions
+  blocked-professions:
+    - "NONE"
+    - "NITWIT"
+  
+  # 最低村民等级要求
+  min-level: 1
+  
+  # 最高村民等级要求
+  max-level: 5
+  
+  # 是否允许捕获幼年村民
+  allow-baby: false
+  
+  # 是否允许捕获有名字的村民
+  allow-named: true
+
+# 效果设置
+effects:
+  # 捕获村民时的效果
+  capture:
+    # 是否播放音效
+    sound: true
+    
+    # 音效类型
+    sound-type: "ITEM_BUCKET_FILL"
+    
+    # 音效音量
+    sound-volume: 1.0
+    
+    # 音效音调
+    sound-pitch: 1.0
+    
+    # 是否生成粒子效果
+    particles: true
+    
+    # 粒子类型
+    particle-type:
