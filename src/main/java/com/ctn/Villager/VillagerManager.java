@@ -191,7 +191,7 @@ public class VillagerManager {
                 long lastRestock = (Long) getLastRestockMethod.invoke(villager);
                 
                 data.put("restocksToday", restocksToday);
-                data.put("lastRestock", lastRestock); // 修复了这里的字符串字面量错误
+                data.put("lastRestock", lastRestock); 
             } catch (Exception e) {
                 data.put("restocksToday", 0);
                 data.put("lastRestock", 0L);
@@ -275,7 +275,7 @@ public class VillagerManager {
     }
     
     /**
-     * 序列化物品堆栈（修复附魔书处理）
+     * 序列化物品堆栈
      */
     private Map<String, Object> serializeItemStack(ItemStack item) {
         Map<String, Object> itemData = new HashMap<>();
@@ -350,7 +350,6 @@ public class VillagerManager {
                     metaData.put("unbreakable", true);
                 }
             } catch (Exception e) {
-                // 方法不存在，忽略
             }
             
             itemData.put("meta", metaData);
@@ -360,7 +359,7 @@ public class VillagerManager {
     }
     
     /**
-     * 反序列化村民数据（修复数据损坏问题）
+     * 反序列化村民数据
      */
     private Villager deserializeVillagerData(String data, Location location) {
         try {
@@ -578,7 +577,7 @@ public class VillagerManager {
     }
     
     /**
-     * 反序列化物品堆栈（修复附魔书处理）
+     * 反序列化物品堆栈
      */
     private ItemStack deserializeItemStack(Map<String, Object> itemData) {
         try {
