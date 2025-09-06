@@ -52,21 +52,24 @@ public class VillagerInteractionListener implements Listener {
             return;
         }
         
-        // 检查权限
-        if (!player.hasPermission("villagerbucket.capture")) {
-            player.sendMessage(ChatColor.RED + "你没有权限使用桶捕获村民!");
-            return;
-        }
-        
         // 检查桶是否已经是村民桶（防止重复放入）
         if (villagerManager.isVillagerBucket(itemInHand)) {
             player.sendMessage(ChatColor.RED + "这个桶已经装了一个村民!");
+            event.setCancelled(true);
+            return;
+        }
+        
+        // 检查权限
+        if (!player.hasPermission("villagerbucket.capture")) {
+            player.sendMessage(ChatColor.RED + "你没有权限使用桶捕获村民!");
+            event.setCancelled(true);
             return;
         }
         
         // 检查村民是否有效
         if (villager.isDead() || !villager.isValid()) {
             player.sendMessage(ChatColor.RED + "这个村民无效或已死亡!");
+            event.setCancelled(true);
             return;
         }
         
@@ -81,7 +84,13 @@ public class VillagerInteractionListener implements Listener {
     
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        // 只处理右键方块事件
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+        
+        // 检查是否为主手交互
+        if (event.getHand() != EquipmentSlot.HAND) {
             return;
         }
         
@@ -96,9 +105,11 @@ public class VillagerInteractionListener implements Listener {
         // 检查权限
         if (!player.hasPermission("villagerbucket.release")) {
             player.sendMessage(ChatColor.RED + "你没有权限释放村民!");
+            event.setCancelled(true);
             return;
         }
         
+        // 取消事件，防止与流体交互
         event.setCancelled(true);
         
         // 获取点击的位置
@@ -107,6 +118,13 @@ public class VillagerInteractionListener implements Listener {
         Block clickedBlock = event.getClickedBlock();
         BlockFace blockFace = event.getBlockFace();
         
+        // 检查目标位置是否适合放置村民（不是流体）
+        Block targetBlock = clickedBlock.getRelative(blockFace);
+        if (isFluid(targetBlock.getType())) {
+            player.sendMessage(ChatColor.RED + "不能将村民放置在流体中!");
+            return;
+        }
+        
         // 计算村民生成位置
         Location spawnLocation = calculateSpawnLocation(clickedBlock, blockFace);
         
@@ -114,6 +132,14 @@ public class VillagerInteractionListener implements Listener {
         plugin.getServer().getRegionScheduler().execute(plugin, spawnLocation, () -> {
             releaseVillager(player, item, spawnLocation);
         });
+    }
+    
+    // 检查材料是否为流体
+    private boolean isFluid(Material material) {
+        return material == Material.WATER || material == Material.LAVA || 
+               material == Material.BUBBLE_COLUMN || material == Material.SEAGRASS || 
+               material == Material.TALL_SEAGRASS || material == Material.KELP || 
+               material == Material.KELP_PLANT;
     }
     
     private Location calculateSpawnLocation(Block clickedBlock, BlockFace blockFace) {
@@ -176,10 +202,17 @@ public class VillagerInteractionListener implements Listener {
     
     private void releaseVillager(Player player, ItemStack villagerBucket, Location location) {
         try {
+            // 检查目标位置是否安全（不是流体）
+            if (isFluid(location.getBlock().getType())) {
+                player.sendMessage(ChatColor.RED + "不能将村民放置在流体中!");
+                return;
+            }
+            
             // 从桶中恢复村民
             Villager villager = villagerManager.restoreVillagerFromBucket(villagerBucket, location);
             
             if (villager == null) {
+                player.sendMessage(ChatColor.RED + "释放村民失败，数据可能已损坏!");
                 return;
             }
             

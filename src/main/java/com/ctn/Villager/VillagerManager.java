@@ -98,6 +98,11 @@ public class VillagerManager {
                 lore.add("§7职业: " + professionName);
                 lore.add("§7等级: " + villager.getVillagerLevel() + "级");
                 lore.add("§7类型: " + typeName + "村民");
+                
+                // 添加年龄状态信息
+                String ageStatus = villager.isAdult() ? "成年" : "幼年";
+                lore.add("§7年龄: " + ageStatus);
+                
                 lore.add("§7经验: " + villager.getVillagerExperience());
                 lore.add("§7交易数量: " + villager.getRecipes().size() + "个");
                 lore.add("");
@@ -181,6 +186,10 @@ public class VillagerManager {
             data.put("customName", villager.getCustomName());
             data.put("villagerHealth", villager.getHealth());
             data.put("maxHealth", villager.getMaxHealth());
+            
+            // 保存年龄信息
+            data.put("age", villager.getAge());
+            data.put("isAdult", villager.isAdult());
             
             // 补货信息
             try {
@@ -437,6 +446,12 @@ public class VillagerManager {
                 villager.setAgeLock(ageLock);
             }
             
+            // 设置年龄信息
+            Number age = (Number) villagerData.get("age");
+            if (age != null) {
+                villager.setAge(age.intValue());
+            }
+            
             // 设置自定义名称
             String customName = (String) villagerData.get("customName");
             if (customName != null) {
@@ -492,8 +507,11 @@ public class VillagerManager {
                 }
             }
             
-            // 确保村民是成人
-            villager.setAdult();
+            // 确保村民是成人（如果年龄锁定且是成人状态）
+            Boolean isAdult = (Boolean) villagerData.get("isAdult");
+            if (isAdult != null && isAdult) {
+                villager.setAdult();
+            }
             
             return villager;
             
@@ -725,7 +743,6 @@ public class VillagerManager {
                                 java.lang.reflect.Method setUnbreakableMethod = meta.getClass().getMethod("setUnbreakable", boolean.class);
                                 setUnbreakableMethod.invoke(meta, true);
                             } catch (Exception e) {
-                                // 方法不存在，忽略
                             }
                         }
                     }
