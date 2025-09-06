@@ -13,7 +13,7 @@ Folia_VillagerBucket - 村民桶插件
 安装要求
 
 · Minecraft 服务器版本：1.21.8
-· 服务器核心：Folia
+· 服务器核心：理论上支持所有插件服
 · Java 版本：21+
 
 安装方法
