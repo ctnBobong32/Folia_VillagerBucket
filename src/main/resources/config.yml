@@ -1,5 +1,14 @@
-# VillagerBucket 配置文件
 # 村民桶插件配置
+# 版本: 1.3.0
+# GitHub: https://github.com/ctnBobong32/Folia_VillagerBucket
+
+# 插件信息
+info:
+  version: '1.3.0'
+  build-date: '${buildDate}'
+  github: 'https://github.com/ctnBobong32/Folia_VillagerBucket'
+  author: 'ctnBobong32'
+  supported-minecraft-versions: '1.16.5 - 1.20.4'
 
 # 插件设置
 settings:
@@ -9,8 +18,11 @@ settings:
   # 是否检查权限
   check-permissions: true
   
-  # 自定义模型数据编号
+  # 自定义模型数据编号（所有村民桶使用同一个模型数据）
   custom-model-data: 1000
+  
+  # 是否启用材质包支持
+  enable-resource-pack: true
   
   # 是否启用调试模式
   debug-mode: false
@@ -23,92 +35,210 @@ settings:
   
   # 是否保存村民补货信息
   save-restock-info: true
+  
+  # 是否启用粒子效果
+  enable-particles: true
+  
+  # 是否启用音效
+  enable-sounds: true
+  
+  # 被禁用的世界列表
+  disabled-worlds:
+    - "pvp_arena"
+  
+  # 捕获冷却时间（秒，0表示无冷却）
+  capture-cooldown: 0
+  
+  # 是否防止捕获有自定义名称的村民
+  protect-named-villagers: true
+  
+  # 是否检查生成位置安全性
+  check-spawn-safety: true
 
 # 村民桶物品设置
 bucket:
   # 桶的显示名称
   name: "&6村民桶"
   
-  # 桶的Lore描述
+  # 桶的Lore描述（支持变量替换）
   lore:
-    - "&7包含一个被捕获的村民"
-    - "&7右键放置到世界上"
+    - "&7包含一个被捕捉的村民"
+    - "&7右键放置村民"
     - ""
+    - "&e职业: {profession}"
+    - "&e等级: {level}"
+    - "&e类型: {type}"
+    - "&e年龄: {age}"
+    - "&e经验: {experience}"
+    - "&e交易数量: {recipe-count}"
+  
+  # 是否在Lore中显示UUID（调试用）
+  show-uuid: false
 
 # 权限设置
 permissions:
+  # 基础使用权限
+  use: "villagerbucket.use"
+  
   # 捕获村民权限
   capture: "villagerbucket.capture"
   
   # 释放村民权限
   release: "villagerbucket.release"
   
-  # 管理员权限
+  # 给予物品权限
+  give: "villagerbucket.give"
+  
+  # 重载插件权限
+  reload: "villagerbucket.reload"
+  
+  # 查看信息权限
+  info: "villagerbucket.info"
+  
+  # 管理员权限（包含所有权限）
   admin: "villagerbucket.admin"
   
-  # 绕过限制权限
-  bypass:
-    # 绕过职业限制
-    profession: "villagerbucket.bypass.profession"
-    
-    # 绕过等级限制
-    level: "villagerbucket.bypass.level"
+  # 绕过世界限制权限
+  bypass-world: "villagerbucket.bypass.world"
+  
+  # 绕过冷却时间权限
+  bypass-cooldown: "villagerbucket.bypass.cooldown"
 
-# 村民限制设置
-restrictions:
-  # 允许捕获的职业列表
-  # 如果为空列表则允许所有职业
-  allowed-professions:
-    - "ARMORER"
-    - "BUTCHER"
-    - "CARTOGRAPHER"
-    - "CLERIC"
-    - "FARMER"
-    - "FISHERMAN"
-    - "FLETCHER"
-    - "LEATHERWORKER"
-    - "LIBRARIAN"
-    - "MASON"
-    - "SHEPHERD"
-    - "TOOLSMITH"
-    - "WEAPONSMITH"
+# 音效设置
+sounds:
+  # 捕获村民时的音效
+  capture: "ITEM_BUCKET_FILL"
   
-  # 禁止捕获的职业列表
-  # 优先级高于 allowed-professions
-  blocked-professions:
-    - "NONE"
-    - "NITWIT"
+  # 释放村民时的音效
+  release: "ITEM_BUCKET_EMPTY"
   
-  # 最低村民等级要求
-  min-level: 1
+  # 操作失败时的音效
+  error: "BLOCK_ANVIL_PLACE"
   
-  # 最高村民等级要求
-  max-level: 5
-  
-  # 是否允许捕获幼年村民
-  allow-baby: false
-  
-  # 是否允许捕获有名字的村民
-  allow-named: true
+  # 成功操作时的音效
+  success: "ENTITY_PLAYER_LEVELUP"
 
-# 效果设置
-effects:
-  # 捕获村民时的效果
-  capture:
-    # 是否播放音效
-    sound: true
-    
-    # 音效类型
-    sound-type: "ITEM_BUCKET_FILL"
-    
-    # 音效音量
-    sound-volume: 1.0
-    
-    # 音效音调
-    sound-pitch: 1.0
-    
-    # 是否生成粒子效果
-    particles: true
-    
-    # 粒子类型
-    particle-type:
+# 粒子效果设置
+particles:
+  # 捕获时的粒子效果
+  capture: "SMOKE_NORMAL"
+  
+  # 释放时的粒子效果
+  release: "VILLAGER_HAPPY"
+  
+  # 粒子数量
+  count: 15
+  
+  # 粒子范围
+  range: 1.0
+
+# 消息配置
+messages:
+  # 前缀
+  prefix: "&6[村民桶] &f"
+  
+  # 捕获成功消息
+  captured: "&a成功捕获{0}村民！"
+  
+  # 释放成功消息
+  released: "&a已成功释放{0}村民！"
+  
+  # 重载成功消息
+  reloaded: "&a配置已重载qwq！"
+  
+  # 无权限消息
+  no-permission: "&c你没有权限执行此操作，请尝试获得权限后重试qwq！"
+  
+  # 无释放权限消息
+  no-permission-release: "&c你没有权限释放村民！"
+  
+  # 版本信息消息
+  version-info: "&a村民桶插件 &e版本 {0}"
+  
+  # 命令用法消息
+  usage: "&c用法: /villagerbucket [reload|give|list|info|stats|help]"
+  
+  # 无效命令消息
+  invalid-command: "&c无效的命令参数！"
+  
+  # 目标不是村民消息
+  not-a-villager: "&c目标不是村民，无法捕捉！"
+  
+  # 桶已使用消息
+  bucket-already-used: "&c这个桶已经装了一个村民！"
+  
+  # 无效村民消息
+  invalid-villager: "&c这个村民无效或已死亡，请尝试换一个重试！"
+  
+  # 不能在流体中放置消息
+  cannot-place-in-fluid: "&c不能将村民放置在流体中！"
+  
+  # 不安全生成位置消息
+  unsafe-spawn-location: "&c这个位置不安全，无法放置村民！"
+  
+  # 物品栏已满消息
+  inventory-full: "&e物品栏已满，物品已掉落在地上！"
+  
+  # 数据损坏消息
+  data-corrupted: "&c村民桶数据已损坏，无法释放村民！"
+  
+  # 玩家不在线消息
+  player-offline: "&c玩家不在线或不存在！"
+  
+  # 给予成功消息
+  give-success: "&a已成功给予 {0} 一个村民桶！"
+  
+  # 配置错误消息
+  config-error: "&c配置错误：{0}"
+  
+  # 世界被禁用消息
+  world-disabled: "&c这个世界禁止使用村民桶！"
+  
+  # 冷却时间消息
+  cooldown: "&c请等待 {0} 秒后再尝试捕获村民！"
+  
+  # 有主人的村民消息
+  villager-owned: "&c这个村民已经有主人了！"
+  
+  # 帮助消息
+  help:
+    - "&6=== 村民桶插件帮助 ==="
+    - "&e/vb give <玩家> &7- 给予玩家村民桶"
+    - "&e/vb reload &7- 重载插件配置"
+    - "&e/vb info &7- 查看插件信息"
+    - "&e/vb help &7- 显示此帮助信息"
+
+# 命令别名设置
+aliases:
+  villagerbucket: ["vb", "villagerb", "vbucket"]
+
+# 数据库设置（未来功能）
+database:
+  # 是否启用数据库存储
+  enabled: false
+  
+  # 数据库类型: mysql, sqlite
+  type: "sqlite"
+  
+  # SQLite数据库文件
+  sqlite-file: "villagerbucket.db"
+  
+  # MySQL设置
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "villagerbucket"
+    username: "username"
+    password: "password"
+    table-prefix: "vb_"
+
+# 统计设置
+statistics:
+  # 是否启用数据统计
+  enabled: true
+  
+  # 是否向作者发送匿名使用统计
+  send-statistics: true
+  
+  # 统计间隔（分钟）
+  interval: 60
