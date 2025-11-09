@@ -1,0 +1,72 @@
+# 村民桶插件配置
+
+# 桶设置
+bucket:
+  # 村民桶显示名称
+  name: "&6村民桶"
+  # 村民桶Lore信息
+  lore:
+    - "&7包含一个被捕捉的村民"
+    - "&7右键放置村民"
+    - ""
+    - "&e职业: {profession}"
+    - "&e等级: {level}"
+    - "&e类型: {type}"
+    - "&e年龄: {age}"
+    - "&e经验: {experience}"
+    - "&e交易数量: {recipe-count}"
+
+# 插件设置 - Folia优化
+settings:
+  # 调试模式
+  debug-mode: true
+  # 检查更新
+  check-updates: true
+  # 自定义模型数据
+  custom-model-data: 1000
+  # 启用粒子效果
+  enable-particles: true
+  # 检查权限
+  check-permissions: true
+  
+  # 数据保存设置
+  save-experience: true
+  save-trades: true
+  save-restock-info: false
+  
+  # 防重复生成设置 - 已修复误报问题
+  anti-duplicate:
+    enabled: true
+    release-cooldown: 1000
+    nearby-check-radius: 0.5
+    max-nearby-villagers: 2
+  
+  # 领地插件支持设置
+  claim-support:
+    enabled: true
+    auto-detect: true
+    bypass-permission: "villagerbucket.bypass.claim"
+  
+  # Folia特定设置
+  folia:
+    timeout-seconds: 10
+    retry-attempts: 3
+    fallback-global-scheduler: true
+    detailed-debug: true
+    
+  # 禁用世界列表
+  disabled-worlds: []
+
+# 音效设置
+sounds:
+  capture: "ITEM_BUCKET_FILL"
+  release: "ITEM_BUCKET_EMPTY"
+
+# 权限设置
+permissions:
+  capture: "villagerbucket.capture"
+  release: "villagerbucket.release" 
+  give: "villagerbucket.give"
+  reload: "villagerbucket.reload"
+  info: "villagerbucket.info"
+  bypass-claim: "villagerbucket.bypass.claim"

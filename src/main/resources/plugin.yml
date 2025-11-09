@@ -1,0 +1,60 @@
+name: VillagerBucket
+version: 1.3.0
+main: com.ctn.Villager.VillagerBucketPlugin
+api-version: "1.21"
+description: 一个可以捕获和释放村民的插件
+author: ctnBobong32
+website: https://github.com/ctnBobong32/Folia_VillagerBucket
+
+# 支持Folia
+folia-supported: true
+
+# 加载器
+load: POSTWORLD
+loadbefore: []
+
+# 依赖
+depend: []
+softdepend: []
+
+# 库
+libraries:
+  - com.google.code.gson:gson:2.10.1
+
+# 命令
+commands:
+  villagerbucket:
+    description: 村民桶插件主命令
+    usage: /<command> [reload|give|info|version|help]
+    aliases: [vb, vbucket]
+    permission: villagerbucket.info
+
+# 权限
+permissions:
+  villagerbucket.*:
+    description: 村民桶插件所有权限
+    children:
+      villagerbucket.capture: true
+      villagerbucket.release: true
+      villagerbucket.give: true
+      villagerbucket.reload: true
+      villagerbucket.info: true
+      villagerbucket.bypass.claim: true
+  villagerbucket.capture:
+    description: 允许捕获村民
+    default: op
+  villagerbucket.release:
+    description: 允许释放村民
+    default: op
+  villagerbucket.give:
+    description: 允许给予村民桶
+    default: op
+  villagerbucket.reload:
+    description: 允许重载插件配置
+    default: op
+  villagerbucket.info:
+    description: 允许查看插件信息
+    default: true
+  villagerbucket.bypass.claim:
+    description: 绕过领地权限检查
+    default: op

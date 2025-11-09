@@ -1,0 +1,48 @@
+# 村民桶插件消息配置
+
+# 权限消息
+no-permission: "&c你没有权限执行此操作！"
+no-permission-release: "&c你没有权限释放村民！"
+
+# 领地权限消息
+no-claim-permission-capture: "&c你没有权限在此领地内捕获村民！"
+no-claim-permission-release: "&c你没有权限在此领地内释放村民！"
+claim-bypass-permission: "&e你已绕过领地限制。"
+
+# 操作消息
+captured: "&a成功捕获{0}村民！"
+released: "&a已成功释放{0}村民！"
+invalid-villager: "&c这个村民无效或已死亡，请尝试换一个重试！"
+villager-owned: "&c这个村民已经有主人了！"
+bucket-already-used: "&c这个桶已经装了一个村民！"
+cannot-place-in-fluid: "&c不能将村民放置在流体中！"
+unsafe-spawn-location: "&c这个位置不安全，无法释放村民！"
+world-disabled: "&c这个世界禁止使用村民桶！"
+player-offline: "&c玩家不在线或不存在！"
+inventory-full: "&e物品栏已满，物品已掉落在地上！"
+duplicate-release: "&c请勿重复释放村民！"
+nearby-villager: "&c附近已存在太多村民，请换个位置释放！"
+
+# 命令消息
+reloaded: "&a配置已重载！"
+give-success: "&a已成功给予 {0} 一个村民桶！"
+version-info: "&a村民桶插件 &e版本 {0}"
+usage: "&c用法: /villagerbucket [reload|give|info|version|help]"
+
+# 帮助消息
+help:
+  - "&6=== 村民桶插件帮助 ==="
+  - "&e/villagerbucket give <玩家> [职业] [类型] [等级] &7- 给予玩家村民桶"
+  - "&e/villagerbucket reload &7- 重载插件配置"
+  - "&e/villagerbucket info &7- 查看插件信息"
+  - "&e/villagerbucket version &7- 查看版本信息"
+  - "&e/villagerbucket help &7- 显示此帮助信息"
+
+# 交互提示消息
+interaction:
+  use-empty-bucket: "&e请使用空桶来捕获村民！"
+  click-block-to-release: "&e请右键方块来释放村民！"
+  cannot-use-on-animals: "&c村民桶不能用于收集牛奶，请使用空桶！"
+  cannot-use-on-water-mobs: "&e村民桶不能用于捕获水生生物。"
+  general-usage: "&e村民桶只能用于释放村民。"
+  cannot-collect-fluid: "&c村民桶不能用于收集流体！"
