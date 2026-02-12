@@ -1,0 +1,51 @@
+name: VillagerBucket
+version: 1.3.0
+main: com.ctn.Villager.VillagerBucketPlugin
+api-version: "1.21"
+description: 一个可以捕获和释放村民的插件
+folia-supported: true
+libraries:
+  - com.google.code.gson:gson:2.13.2
+
+
+commands:
+  villagerbucket:
+    description: 村民桶插件主命令
+    usage: /<command> [reload|info|version|help|debug|redetect]
+    aliases: [vb, vbucket]
+    permission: villagerbucket.info
+
+permissions:
+  villagerbucket.*:
+    description: 村民桶插件所有权限
+    children:
+      villagerbucket.capture: true
+      villagerbucket.release: true
+      villagerbucket.reload: true
+      villagerbucket.info: true
+      villagerbucket.debug: true
+      villagerbucket.redetect: true
+
+  villagerbucket.capture:
+    description: 允许捕获村民
+    default: true
+
+  villagerbucket.release:
+    description: 允许释放村民
+    default: true
+
+  villagerbucket.reload:
+    description: 允许重载插件配置
+    default: op
+
+  villagerbucket.info:
+    description: 允许查看插件信息
+    default: true
+
+  villagerbucket.debug:
+    description: 允许查看调试信息
+    default: op
+
+  villagerbucket.redetect:
+    description: 允许重新检测领地插件
+    default: op

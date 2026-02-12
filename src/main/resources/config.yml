@@ -1,0 +1,22 @@
+settings:
+  check-permissions: true
+  enable-particles: true
+  save-trades: true
+  save-experience: true
+  save-restock-info: false
+  debug-mode: false
+  check-updates: true
+  custom-model-data: 1000
+  
+  anti-duplicate:
+    enabled: true
+    release-cooldown: 350
+    nearby-check-radius: 0.6
+    max-nearby-villagers: 4
+  disabled-worlds: []
+
+  folia:
+    timeout-seconds: 10
+    retry-attempts: 2
+    fallback-global-scheduler: true
+    detailed-debug: false
