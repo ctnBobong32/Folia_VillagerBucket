@@ -1,22 +1,42 @@
 settings:
+  # 是否检查玩家权限（例如使用指令时的权限）
   check-permissions: true
+  # 是否启用粒子效果（例如释放村民时的视觉效果）
   enable-particles: true
+  # 是否保存村民的交易记录（用于还原村民）
   save-trades: true
+  # 是否保存村民的经验值
   save-experience: true
+  # 是否保存村民的补货信息（包括交易次数等）
   save-restock-info: false
+  # 调试模式开关（开启后会输出更多日志信息）
   debug-mode: false
+  # 是否检查插件更新（连接至官方源或 Spigot 等）
   check-updates: true
+  # 自定义模型数据值（用于村民桶物品的模型标识）
   custom-model-data: 1000
-  
+
+  # 防重复生成村民的配置（用于防止通过刷村民桶刷出过多村民）
   anti-duplicate:
+    # 是否启用防重复机制
     enabled: true
+    # 释放村民后的冷却时间（单位：游戏刻，20 刻 = 1 秒）
     release-cooldown: 350
+    # 检测附近村民的半径（单位：方块）
     nearby-check-radius: 0.6
+    # 指定半径内允许的最大村民数量
     max-nearby-villagers: 4
+
+  # 禁用的世界列表（在这些世界中村民桶功能将失效）
   disabled-worlds: []
 
+  # Folia 服务器核心相关设置（针对多线程服务器的优化）
   folia:
+    # 任务超时时间（秒），超过此时间任务将被强制终止
     timeout-seconds: 10
+    # 任务失败时的重试次数
     retry-attempts: 2
+    # 如果无法使用区域调度器，是否回退到全局调度器
     fallback-global-scheduler: true
+    # 是否启用详细的 Folia 调试输出
     detailed-debug: false
