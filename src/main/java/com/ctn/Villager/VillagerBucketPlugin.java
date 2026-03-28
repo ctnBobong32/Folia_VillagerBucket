@@ -29,7 +29,8 @@ public class VillagerBucketPlugin extends JavaPlugin {
     public void onLoad() {
         instance = this;
     }
-   //注册指令
+
+    // 注册指令
     @Override
     public void onEnable() {
         this.schedulerManager = new SchedulerManager(this);
@@ -47,7 +48,8 @@ public class VillagerBucketPlugin extends JavaPlugin {
         } else {
             getLogger().warning("命令 villagerbucket 未在 plugin.yml 注册，命令功能不可用！");
         }
-        scheduleClaimDetectionAfterStartup();
+        // 修改：延迟领地插件检测，避免服务器启动早期调度器未就绪
+        Bukkit.getScheduler().runTaskLater(this, () -> scheduleClaimDetectionAfterStartup(), 20L);
         scheduler.runAsyncLater(new Runnable() {
             @Override
             public void run() {
@@ -58,8 +60,8 @@ public class VillagerBucketPlugin extends JavaPlugin {
         getLogger().info("插件版本: " + getDescription().getVersion());
         getLogger().info("作者: " + String.join(", ", getDescription().getAuthors()));
     }
-    
-    //取消任务并清理资源
+
+    // 取消任务并清理资源
     @Override
     public void onDisable() {
         try {
@@ -85,6 +87,7 @@ public class VillagerBucketPlugin extends JavaPlugin {
         }
         getLogger().info("村民桶插件已禁用");
     }
+
     private void scheduleClaimDetectionAfterStartup() {
         scheduler.runGlobalLater(new Runnable() {
             @Override
@@ -109,8 +112,8 @@ public class VillagerBucketPlugin extends JavaPlugin {
             }
         }, 1L);
     }
-    
-    //消息文件
+
+    // 消息文件
     private void setupMessagesConfig() {
         if (!getDataFolder().exists() && !getDataFolder().mkdirs()) {
             getLogger().warning("无法创建插件数据目录: " + getDataFolder().getAbsolutePath());
@@ -131,8 +134,8 @@ public class VillagerBucketPlugin extends JavaPlugin {
         }
         reloadMessagesConfig();
     }
-    
-   //默认消息文本
+
+    // 默认消息文本
     public void reloadMessagesConfig() {
         if (messagesFile == null) {
             messagesFile = new File(getDataFolder(), "messages.yml");
@@ -208,8 +211,8 @@ public class VillagerBucketPlugin extends JavaPlugin {
         if (messagesConfig == null) reloadMessagesConfig();
         return messagesConfig.getStringList(path);
     }
-    
-    //还未完工的更新检查QwQ
+
+    // 还未完工的更新检查QwQ
     private void checkForUpdates() {
         if (!getConfig().getBoolean("settings.check-updates", true)) return;
 
