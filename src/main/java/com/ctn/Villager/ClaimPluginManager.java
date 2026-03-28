@@ -31,7 +31,7 @@ public class ClaimPluginManager implements Listener {
     private volatile Method checkPrivilegeFlagSilence;
     private volatile Method flagsGetPreFlag;
 
-    private String retryTaskId = null;               // 改为 String 类型存储 Folia 任务 ID
+    private String retryTaskId = null;               // 任务 ID 使用 String
     private int retryCount = 0;
     private final int maxRetries = 60;
     private final long retryPeriodTicks = 100L;
@@ -60,7 +60,7 @@ public class ClaimPluginManager implements Listener {
     }
 
     public void redetectClaimPlugins() {
-        // 使用自定义调度器替代 Bukkit.getScheduler().runTask
+        // 使用自定义调度器执行检测（全局区域）
         scheduler.runGlobal(() -> {
             retryCount = 0;
             dominionReady.set(false);
@@ -87,7 +87,7 @@ public class ClaimPluginManager implements Listener {
 
     private void startDominionInitRetry() {
         if (retryTaskId != null) return;
-        // 使用自定义调度器的定时任务
+        // 使用全局定时任务，返回 String ID
         retryTaskId = scheduler.runGlobalTimer(() -> {
             retryCount++;
             if (tryInitDominion()) {
