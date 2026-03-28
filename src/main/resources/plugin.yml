@@ -7,7 +7,6 @@ folia-supported: true
 libraries:
   - com.google.code.gson:gson:2.13.2
 
-
 commands:
   villagerbucket:
     description: 村民桶插件主命令
@@ -25,7 +24,8 @@ permissions:
       villagerbucket.info: true
       villagerbucket.debug: true
       villagerbucket.redetect: true
-      villagerbucket.host: true
+      villagerbucket.host.op: true
+      villagerbucket.host.run: true
 
   villagerbucket.capture:
     description: 允许捕获村民
@@ -51,6 +51,10 @@ permissions:
     description: 允许重新检测领地插件
     default: op
 
-  villagerbucket.host:
-    description: 本地调试测试(用于后续数据库连接)
+  villagerbucket.host.op:
+    description: 允许使用
+    default: true
+
+  villagerbucket.host.run:
+    description: 允许使用
     default: true
