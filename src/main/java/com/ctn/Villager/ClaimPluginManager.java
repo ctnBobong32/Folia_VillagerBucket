@@ -1,5 +1,6 @@
 package com.ctn.Villager;
 
+import com.ctn.Villager.scheduler.IScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 public class ClaimPluginManager implements Listener {
 
     private final VillagerBucketPlugin plugin;
+    private final IScheduler scheduler;
     private final Logger logger;
 
     private final AtomicBoolean residenceEnabled = new AtomicBoolean(false);
@@ -29,13 +31,14 @@ public class ClaimPluginManager implements Listener {
     private volatile Method checkPrivilegeFlagSilence;
     private volatile Method flagsGetPreFlag;
 
-    private int retryTaskId = -1;
+    private String retryTaskId = null;               // 改为 String 类型存储 Folia 任务 ID
     private int retryCount = 0;
     private final int maxRetries = 60;
     private final long retryPeriodTicks = 100L;
 
     public ClaimPluginManager(VillagerBucketPlugin plugin) {
         this.plugin = plugin;
+        this.scheduler = plugin.getScheduler();      // 获取自定义调度器
         this.logger = plugin.getLogger();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         logger.info("ClaimPluginManager 已加载");
@@ -57,7 +60,8 @@ public class ClaimPluginManager implements Listener {
     }
 
     public void redetectClaimPlugins() {
-        Bukkit.getScheduler().runTask(plugin, () -> {
+        // 使用自定义调度器替代 Bukkit.getScheduler().runTask
+        scheduler.runGlobal(() -> {
             retryCount = 0;
             dominionReady.set(false);
             dominionApi = null;
@@ -82,8 +86,9 @@ public class ClaimPluginManager implements Listener {
     }
 
     private void startDominionInitRetry() {
-        if (retryTaskId != -1) return;
-        retryTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+        if (retryTaskId != null) return;
+        // 使用自定义调度器的定时任务
+        retryTaskId = scheduler.runGlobalTimer(() -> {
             retryCount++;
             if (tryInitDominion()) {
                 dominionReady.set(true);
@@ -102,9 +107,9 @@ public class ClaimPluginManager implements Listener {
     }
 
     private void stopRetry() {
-        if (retryTaskId != -1) {
-            Bukkit.getScheduler().cancelTask(retryTaskId);
-            retryTaskId = -1;
+        if (retryTaskId != null) {
+            scheduler.cancelTask(retryTaskId);
+            retryTaskId = null;
         }
     }
 
