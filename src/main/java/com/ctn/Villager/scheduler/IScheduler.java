@@ -1,10 +1,7 @@
 package com.ctn.Villager.scheduler;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public interface IScheduler {
     boolean isPrimaryThread();
@@ -18,8 +15,8 @@ public interface IScheduler {
     void cancelTask(String taskId);
     void cancelTask(int taskId);
     void runLater(Runnable task, long delay);
-    default void runGlobalLater(Runnable task, long delay) {
-        Plugin plugin = JavaPlugin.getProvidingPlugin(getClass());
-        Bukkit.getScheduler().runTaskLater(plugin, task, delay);
-    }
+    void runGlobalLater(Runnable task, long delay);
+    void runGlobalTimer(Runnable task, long delay, long period);
+    void runAtLocationLater(Location location, Runnable task, long delay);
+    void runAtLocationTimer(Location location, Runnable task, long delay, long period);
 }
