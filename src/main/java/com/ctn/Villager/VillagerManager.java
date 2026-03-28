@@ -21,6 +21,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -316,8 +318,9 @@ public class VillagerManager {
         try {
             VillagerSnapshot s = new VillagerSnapshot();
 
-            s.profession = villager.getProfession().name();
-            s.type = villager.getVillagerType().name();
+            // 使用 Paper API 获取注册表键名，替代废弃的 name()
+            s.profession = villager.getProfession().getKey().getKey();
+            s.type = villager.getVillagerType().getKey().getKey();
             s.level = Math.max(1, villager.getVillagerLevel());
             s.experience = Math.max(0, villager.getVillagerExperience());
             s.adult = villager.isAdult();
@@ -524,8 +527,9 @@ public class VillagerManager {
     private Villager restoreVillagerFromSnapshot(VillagerSnapshot s, Location loc) {
         Villager v = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
 
-        v.setProfession(getProfessionFromString(s.profession));
-        v.setVillagerType(getTypeFromString(s.type));
+        // 使用 Paper API 从注册表获取枚举实例
+        v.setProfession(getProfessionFromKey(s.profession));
+        v.setVillagerType(getTypeFromKey(s.type));
 
         v.setVillagerLevel(Math.max(1, Math.min(5, s.level)));
         v.setVillagerExperience(Math.max(0, s.experience));
@@ -608,12 +612,12 @@ public class VillagerManager {
 
     public static String getTypeName(Villager.Type type) {
         if (type == null) return "平原";
-        return VILLAGER_TYPE_NAMES.getOrDefault(type, type.name());
+        return VILLAGER_TYPE_NAMES.getOrDefault(type, type.getKey().getKey());
     }
 
     public static String getProfessionName(Villager.Profession profession) {
         if (profession == null) return "失业";
-        return VILLAGER_PROFESSION_NAMES.getOrDefault(profession, profession.name());
+        return VILLAGER_PROFESSION_NAMES.getOrDefault(profession, profession.getKey().getKey());
     }
 
     public static String getFullVillagerDisplayName(Villager.Type type, Villager.Profession profession) {
@@ -634,14 +638,20 @@ public class VillagerManager {
         return c + name;
     }
 
-    private Villager.Profession getProfessionFromString(String s) {
-        try { return Villager.Profession.valueOf(s.toUpperCase()); }
-        catch (Exception e) { return Villager.Profession.NONE; }
+    // 使用 Paper API 从键名获取 Profession
+    private Villager.Profession getProfessionFromKey(String key) {
+        if (key == null || key.isEmpty()) return Villager.Profession.NONE;
+        NamespacedKey nk = NamespacedKey.minecraft(key.toLowerCase());
+        Villager.Profession profession = Registry.VILLAGER_PROFESSION.get(nk);
+        return profession != null ? profession : Villager.Profession.NONE;
     }
 
-    private Villager.Type getTypeFromString(String s) {
-        try { return Villager.Type.valueOf(s.toUpperCase()); }
-        catch (Exception e) { return Villager.Type.PLAINS; }
+    // 使用 Paper API 从键名获取 Type
+    private Villager.Type getTypeFromKey(String key) {
+        if (key == null || key.isEmpty()) return Villager.Type.PLAINS;
+        NamespacedKey nk = NamespacedKey.minecraft(key.toLowerCase());
+        Villager.Type type = Registry.VILLAGER_TYPE.get(nk);
+        return type != null ? type : Villager.Type.PLAINS;
     }
 
     private void startCacheCleanupLoop() {
