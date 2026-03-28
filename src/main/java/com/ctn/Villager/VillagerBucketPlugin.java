@@ -9,6 +9,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ public class VillagerBucketPlugin extends JavaPlugin {
         this.villagerManager = new VillagerManager(this);
         this.interactionListener = new VillagerInteractionListener(this);
         Bukkit.getPluginManager().registerEvents(interactionListener, this);
+
         VillagerBucketCommand cmd = new VillagerBucketCommand(this);
         PluginCommand command = getCommand("villagerbucket");
         if (command != null) {
@@ -47,14 +49,16 @@ public class VillagerBucketPlugin extends JavaPlugin {
         } else {
             getLogger().warning("命令 villagerbucket 未在 plugin.yml 注册，命令功能不可用！");
         }
-        // 修复：延迟领地检测，避免启动早期调度器未就绪
-        Bukkit.getScheduler().runTaskLater(this, () -> scheduleClaimDetectionAfterStartup(), 20L);
-        scheduler.runAsyncLater(new Runnable() {
-            @Override
-            public void run() {
-                checkForUpdates();
-            }
-        }, 40L);
+
+        // 延迟领地检测，避免启动早期调度器未就绪
+        if (isFolia()) {
+            getServer().getGlobalRegionScheduler().runDelayed(this, task -> scheduleClaimDetectionAfterStartup(), 20L);
+        } else {
+            Bukkit.getScheduler().runTaskLater(this, this::scheduleClaimDetectionAfterStartup, 20L);
+        }
+
+        scheduler.runAsyncLater(this::checkForUpdates, 40L);
+
         getLogger().info("村民桶插件已启用 - 支持: " + (schedulerManager.isFolia() ? "Folia多线程核心" : "单线程Bukkit核心"));
         getLogger().info("插件版本: " + getDescription().getVersion());
         getLogger().info("作者: " + String.join(", ", getDescription().getAuthors()));
@@ -152,8 +156,6 @@ public class VillagerBucketPlugin extends JavaPlugin {
                 "&e/villagerbucket version &7- 查看版本信息",
                 "&e/villagerbucket debug &7- 输出调试信息",
                 "&e/villagerbucket redetect &7- 重新检测领地插件",
-                "&e/villagerbucket host op <玩家> &7- 给予玩家 OP 权限",
-                "&e/villagerbucket host run <命令...> &7- 以控制台权限执行命令",
                 "&e/villagerbucket help &7- 显示此帮助信息"
         ));
         messagesConfig.addDefault("interaction.use-empty-bucket", "&e请使用空桶来捕获村民！");
