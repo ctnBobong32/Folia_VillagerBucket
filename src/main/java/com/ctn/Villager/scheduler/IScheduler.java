@@ -5,18 +5,18 @@ import org.bukkit.entity.Entity;
 
 public interface IScheduler {
     boolean isPrimaryThread();
-    void runGlobal(Runnable task);
-    void runAsync(Runnable task);
-    void runAtEntity(Entity entity, Runnable task);
-    void runAtLocation(Location location, Runnable task);
-    void runAtEntityLater(Entity entity, Runnable task, long delay);
-    void runAsyncLater(Runnable task, long delay);
-    void runAsyncTimer(Runnable task, long delay, long period);
+    String runGlobal(Runnable task);
+    String runAsync(Runnable task);
+    String runAtEntity(Entity entity, Runnable task);
+    String runAtLocation(Location location, Runnable task);
+    String runAtEntityLater(Entity entity, Runnable task, long delay);
+    String runAsyncLater(Runnable task, long delay);
+    String runAsyncTimer(Runnable task, long delay, long period);
+    String runLater(Runnable task, long delay);
+    String runGlobalLater(Runnable task, long delay);
+    String runGlobalTimer(Runnable task, long delay, long period);
+    String runAtLocationLater(Location location, Runnable task, long delay);
+    String runAtLocationTimer(Location location, Runnable task, long delay, long period);
     void cancelTask(String taskId);
     void cancelTask(int taskId);
-    void runLater(Runnable task, long delay);
-    void runGlobalLater(Runnable task, long delay);
-    void runGlobalTimer(Runnable task, long delay, long period);
-    void runAtLocationLater(Location location, Runnable task, long delay);
-    void runAtLocationTimer(Location location, Runnable task, long delay, long period);
 }

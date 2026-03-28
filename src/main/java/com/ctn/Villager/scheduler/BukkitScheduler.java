@@ -20,82 +20,92 @@ public class BukkitScheduler implements IScheduler {
     }
 
     @Override
-    public void runGlobal(Runnable task) {
+    public String runGlobal(Runnable task) {
         int id = Bukkit.getScheduler().runTask(plugin, task).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runAsync(Runnable task) {
+    public String runAsync(Runnable task) {
         int id = Bukkit.getScheduler().runTaskAsynchronously(plugin, task).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runAtEntity(Entity entity, Runnable task) {
-        if (entity == null || !entity.isValid()) return;
+    public String runAtEntity(Entity entity, Runnable task) {
+        if (entity == null || !entity.isValid()) return null;
         int id = Bukkit.getScheduler().runTask(plugin, () -> {
             if (entity.isValid()) task.run();
         }).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runAtLocation(Location location, Runnable task) {
-        if (location == null || location.getWorld() == null) return;
+    public String runAtLocation(Location location, Runnable task) {
+        if (location == null || location.getWorld() == null) return null;
         int id = Bukkit.getScheduler().runTask(plugin, () -> {
             if (location.getWorld() != null) task.run();
         }).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, Runnable task, long delay) {
-        if (entity == null || !entity.isValid()) return;
+    public String runAtEntityLater(Entity entity, Runnable task, long delay) {
+        if (entity == null || !entity.isValid()) return null;
         int id = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (entity.isValid()) task.run();
         }, delay).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runAsyncLater(Runnable task, long delay) {
+    public String runAsyncLater(Runnable task, long delay) {
         int id = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, task, delay).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runAsyncTimer(Runnable task, long delay, long period) {
+    public String runAsyncTimer(Runnable task, long delay, long period) {
         int id = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, task, delay, period).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runLater(Runnable task, long delay) {
+    public String runLater(Runnable task, long delay) {
         int id = Bukkit.getScheduler().runTaskLater(plugin, task, delay).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runGlobalLater(Runnable task, long delay) {
+    public String runGlobalLater(Runnable task, long delay) {
         int id = Bukkit.getScheduler().runTaskLater(plugin, task, delay).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runGlobalTimer(Runnable task, long delay, long period) {
+    public String runGlobalTimer(Runnable task, long delay, long period) {
         int id = Bukkit.getScheduler().runTaskTimer(plugin, task, delay, period).getTaskId();
         manager.addBukkitTaskId(id);
+        return String.valueOf(id);
     }
 
     @Override
-    public void runAtLocationLater(Location location, Runnable task, long delay) {
-        runGlobalLater(task, delay);
+    public String runAtLocationLater(Location location, Runnable task, long delay) {
+        return runGlobalLater(task, delay);
     }
 
     @Override
-    public void runAtLocationTimer(Location location, Runnable task, long delay, long period) {
-        runGlobalTimer(task, delay, period);
+    public String runAtLocationTimer(Location location, Runnable task, long delay, long period) {
+        return runGlobalTimer(task, delay, period);
     }
 
     @Override
