@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.UUID;
@@ -34,6 +35,12 @@ public class VillagerInteractionListener implements Listener {
         this.plugin = plugin;
         this.villagerManager = plugin.getVillagerManager();
         this.claimManager = plugin.getClaimManager();
+
+        // 防御性检查：如果 claimManager 为 null，记录警告
+        if (this.claimManager == null) {
+            plugin.getLogger().warning("ClaimPluginManager 未初始化！所有领地检查将被跳过（不拦截任何交互）。");
+        }
+
         startCleanupTask();
     }
 
@@ -76,7 +83,8 @@ public class VillagerInteractionListener implements Listener {
             return;
         }
 
-        if (!claimManager.canCaptureVillager(player, villager.getLocation())) {
+        // 修复：添加 claimManager 空检查
+        if (claimManager != null && !claimManager.canCaptureVillager(player, villager.getLocation())) {
             event.setCancelled(true);
             send(player, plugin.getMessage("no-claim-permission-capture", "&c你没有权限在此领地内捕获村民！"));
             return;
@@ -175,7 +183,8 @@ public class VillagerInteractionListener implements Listener {
             return;
         }
 
-        if (!claimManager.canBuild(player, spawnLoc)) {
+        // 修复：添加 claimManager 空检查
+        if (claimManager != null && !claimManager.canBuild(player, spawnLoc)) {
             send(player, plugin.getMessage("no-claim-permission-release", "&c你没有权限在此领地内释放村民！"));
             return;
         }
@@ -202,7 +211,8 @@ public class VillagerInteractionListener implements Listener {
                         send(player, plugin.getMessage("cannot-place-in-fluid", "&c不能在流体中释放村民！"));
                         return;
                     }
-                    if (!claimManager.canBuild(player, spawnLoc)) {
+                    // 修复：二次校验，同样添加空检查
+                    if (claimManager != null && !claimManager.canBuild(player, spawnLoc)) {
                         processing.remove(processingKey);
                         send(player, plugin.getMessage("no-claim-permission-release", "&c你没有权限在此领地内释放村民！"));
                         return;
