@@ -83,5 +83,5 @@ mvn -B clean package -Dmaven.test.skip=true -T 8C
 
 许可证 / License
 
-本项目采用 GNU General Public License v3.0 开源，详见 [COPYING](COPYING)文件。
-This project is open-sourced under the GNU General Public License v3.0. See the [COPYING](COPYING) file for details.
+本项目采用 GNU General Public License v3.0 开源，详见 [COPYING](COPYING.txt)文件。
+This project is open-sourced under the GNU General Public License v3.0. See the [COPYING](COPYING.txt) file for details.
