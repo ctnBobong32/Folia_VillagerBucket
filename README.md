@@ -2,7 +2,7 @@
 #### Build
 
 ```
-cmake --build .
+mvn -B clean package -Dmaven.test.skip=true -T 8C -Dmaven.compiler
 ```
 ## License
 
